@@ -3,6 +3,7 @@ import { Sidebar } from "@/components/sidebar/Sidebar";
 import { useState } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 import LoginPage from "./core/Pages/Login_Page/login_page";
+import SignUpPage from "./core/Pages/sign_up/sign_up_page";
 
 function App() {
   const [activeItem, setActiveItem] = useState<string>("Welcome");
@@ -39,6 +40,7 @@ function App() {
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/sign-up" element={<SignUpPage />} />
 
         {/* Default / Wildcard route for Dashboard */}
         <Route path="/*" element={<DashboardLayout />} />

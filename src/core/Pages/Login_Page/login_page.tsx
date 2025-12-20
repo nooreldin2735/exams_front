@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { User, Lock, Loader2, ArrowRight } from "lucide-react";
 import { useLoginLogic } from "./login_logic";
+import { Link } from "react-router-dom";
 
 export default function LoginPage() {
     const {
@@ -116,9 +117,9 @@ export default function LoginPage() {
 
                     <p className="px-8 text-center text-sm text-muted-foreground">
                         Don't have an account?{" "}
-                        <a href="#" className="underline underline-offset-4 hover:text-primary transition-colors">
+                        <Link to="/sign-up" className="underline underline-offset-4 hover:text-primary transition-colors">
                             Sign up
-                        </a>
+                        </Link>
                     </p>
                 </form>
             </motion.div>
