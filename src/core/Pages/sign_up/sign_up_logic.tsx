@@ -20,15 +20,15 @@ export const useSignUpLogic = () => {
         // Clear any previous errors
         setError(null);
 
-        const res = await ApiService.post("/users/create",
+        const res = await ApiService.post("/user/create",
             {
-                "first_name": first_name,
-                "last_name": last_name,
+                "firstname": first_name,
+                "lastname": last_name,
                 "username": username,
                 "email": email,
                 "password": password,
-                "password2":confirm_password
-            
+                "password2": confirm_password
+
             }
         )
 

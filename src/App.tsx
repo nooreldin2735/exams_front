@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 import LoginPage from "./core/Pages/Login_Page/login_page";
 import SignUpPage from "./core/Pages/sign_up/sign_up_page";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 function App() {
   const [activeItem, setActiveItem] = useState<string>("Welcome");
@@ -42,8 +43,10 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/sign-up" element={<SignUpPage />} />
 
-        {/* Default / Wildcard route for Dashboard */}
-        <Route path="/*" element={<DashboardLayout />} />
+        {/* Protected Dashboard Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/*" element={<DashboardLayout />} />
+        </Route>
       </Routes>
     </ThemeProvider>
   );
