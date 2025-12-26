@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, GraduationCap } from "lucide-react";
-import { navigationData } from "@/data/navigationData";
+import { baseNavigationData, type NavigationItem } from "@/data/navigationData";
+import ApiService from "@/services/Api";
 import { SidebarItem } from "./SidebarItem";
 import { SearchBar } from "./SearchBar";
 import { ThemeToggle } from "./ThemeToggle";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -16,18 +18,67 @@ export function Sidebar({ onItemSelect }: SidebarProps) {
     const [isPinned, setIsPinned] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [activeId, setActiveId] = useState<string | null>(null);
+    const [dynamicNav, setDynamicNav] = useState<NavigationItem[]>(baseNavigationData);
+    const navigate = useNavigate();
+
+    const routeMap: Record<string, string> = {
+        "home": "/",
+        "years-list": "/years",
+        "create-year": "/create-year",
+        "create-term": "/create-term",
+    };
+
+    useEffect(() => {
+        const fetchDynamicData = async () => {
+            try {
+                const data = await ApiService.get<any>("/years");
+                let years: any[] = [];
+                if (Array.isArray(data)) {
+                    years = data;
+                } else if (data && typeof data === 'object' && Array.isArray(data.list)) {
+                    years = data.list;
+                }
+
+                const yearItems = years.map((y: any) => ({
+                    id: `year-${y.ID}`,
+                    label: y.Name,
+                    icon: "calendar",
+                }));
+
+                const newNav = [...baseNavigationData];
+                // Insert years after "years-list"
+                const yearsListIdx = newNav.findIndex(i => i.id === 'years-list');
+                if (yearsListIdx !== -1) {
+                    newNav.splice(yearsListIdx + 1, 0, {
+                        id: 'years-group',
+                        label: 'Academic Years',
+                        icon: 'calendar',
+                        children: yearItems
+                    });
+                }
+                setDynamicNav(newNav);
+            } catch (err) {
+                console.error("Failed to fetch years for sidebar:", err);
+            }
+        };
+
+        fetchDynamicData();
+    }, []);
 
     const shouldExpand = isExpanded || isPinned;
 
-    const handleSelect = (id: string, label?: string) => { // Updated signature
+    const handleSelect = (id: string, label?: string) => {
         setActiveId(id);
 
-        // Find the label if not provided (though SidebarItem passes only ID usually, let's look it up if needed)
-        // Actually simplicity: Pass ID up, we can find it or just trust logic.
-        // For now let's just use the ID as the key driver.
+        if (id.startsWith("year-")) {
+            const yearId = id.replace("year-", "");
+            navigate(`/years/${yearId}`);
+        } else if (routeMap[id]) {
+            navigate(routeMap[id]);
+        }
 
         if (onItemSelect) {
-            onItemSelect(id, label || id); // Ideally look up, but for now ID is sufficient
+            onItemSelect(id, label || id);
         }
     };
 
@@ -111,7 +162,7 @@ export function Sidebar({ onItemSelect }: SidebarProps) {
 
                 {/* Navigation Items */}
                 <nav className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-0.5 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
-                    {navigationData.map((item) => (
+                    {dynamicNav.map((item) => (
                         <SidebarItem
                             key={item.id}
                             item={item}

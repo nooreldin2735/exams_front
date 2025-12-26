@@ -5,6 +5,13 @@ import { Routes, Route, Outlet } from "react-router-dom";
 import LoginPage from "./core/Pages/Login_Page/login_page";
 import SignUpPage from "./core/Pages/sign_up/sign_up_page";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import WelcomePage from "./core/Pages/Dashboard/WelcomePage";
+import YearsPage from "./core/Pages/Years/YearsPage";
+import CreateYearPage from "./core/Pages/Create_Year/CreateYearPage";
+import TermsPage from "./core/Pages/Terms/TermsPage";
+import CreateTermPage from "./core/Pages/Terms/CreateTermPage";
+import SubjectsPage from "./core/Pages/Subjects/SubjectsPage";
+import CreateSubjectPage from "./core/Pages/Subjects/CreateSubjectPage";
 
 function App() {
   const [activeItem, setActiveItem] = useState<string>("Welcome");
@@ -25,12 +32,7 @@ function App() {
             </p>
           </header>
 
-          <div className="p-6 rounded-lg border border-border bg-card shadow-sm">
-            <h2 className="text-lg font-semibold mb-2">Content Area</h2>
-            <p className="text-muted-foreground">
-              This is where the content for <strong>{activeItem}</strong> would be displayed.
-            </p>
-          </div>
+
           <Outlet />
         </div>
       </main>
@@ -45,7 +47,15 @@ function App() {
 
         {/* Protected Dashboard Routes */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/*" element={<DashboardLayout />} />
+          <Route path="/" element={<DashboardLayout />}>
+            <Route index element={<WelcomePage />} />
+            <Route path="years" element={<YearsPage />} />
+            <Route path="years/:yearId" element={<TermsPage />} />
+            <Route path="years/:yearId/terms/:termId" element={<SubjectsPage />} />
+            <Route path="create-year" element={<CreateYearPage />} />
+            <Route path="create-term" element={<CreateTermPage />} />
+            <Route path="create-subject" element={<CreateSubjectPage />} />
+          </Route>
         </Route>
       </Routes>
     </ThemeProvider>

@@ -4,6 +4,7 @@ export class ApiService {
   private static axiosInstance: AxiosInstance = axios.create({
     baseURL: 'http://localhost:8000/api/v0',
     timeout: 10000,
+    withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
     },
@@ -34,7 +35,7 @@ export class ApiService {
   static async post<T>(endpoint: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
     try {
       console.log(data);
-      const response: AxiosResponse<T> = await this.axiosInstance.post(endpoint, data);
+      const response: AxiosResponse<T> = await this.axiosInstance.post(endpoint, data, config);
       console.log(response);
       return response.data;
     } catch (error) {

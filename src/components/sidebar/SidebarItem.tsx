@@ -10,6 +10,9 @@ import {
     Video,
     Clipboard,
     Library,
+    Home,
+    List,
+    PlusCircle,
 } from "lucide-react";
 import type { NavigationItem } from "@/data/navigationData";
 import { cn } from "@/lib/utils";
@@ -24,6 +27,9 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     clipboard: Clipboard,
     library: Library,
     code: FileText, // Default mapping
+    home: Home,
+    list: List,
+    "plus-circle": PlusCircle,
 };
 
 interface SidebarItemProps {

@@ -5,34 +5,28 @@ export interface NavigationItem {
     children?: NavigationItem[];
 }
 
-export const navigationData: NavigationItem[] = [
+export interface NavigationItemChild {
+    id: string;
+    label: string;
+    icon?: string;
+    children?: NavigationItemChild[];
+}
+
+export const baseNavigationData: NavigationItem[] = [
     {
-        id: "years",
-        label: "Years",
-        icon: "calendar",
-        children: [
-            {
-                id: "year-1",
-                label: "First Year",
-                children: [
-                    {
-                        id: "term-1",
-                        label: "Term 1",
-                        children: [
-                            { id: "math-101", label: "Math 101", icon: "book" },
-                            { id: "phys-101", label: "Physics 101", icon: "book" },
-                        ],
-                    },
-                    {
-                        id: "term-2",
-                        label: "Term 2",
-                        children: [
-                            { id: "cs-101", label: "Intro to CS", icon: "code" },
-                        ],
-                    },
-                ],
-            },
-        ],
+        id: "home",
+        label: "Home",
+        icon: "home",
+    },
+    {
+        id: "years-list",
+        label: "All Years",
+        icon: "list",
+    },
+    {
+        id: "create-year",
+        label: "Create Year",
+        icon: "plus-circle",
     },
     {
         id: "library",
@@ -45,3 +39,7 @@ export const navigationData: NavigationItem[] = [
         icon: "clipboard",
     },
 ];
+
+// Placeholder for full navigation that Sidebar will manage
+export const navigationData = baseNavigationData;
+
