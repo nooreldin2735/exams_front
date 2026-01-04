@@ -1,6 +1,15 @@
 import { YearsList } from "@/components/Years/YearsList";
+import { useNavigation } from "@/context/NavigationContext";
+import { useEffect } from "react";
 
 export default function YearsPage() {
+    const { setCurrentPathTitle, clearNavigation } = useNavigation();
+
+    useEffect(() => {
+        clearNavigation();
+        setCurrentPathTitle("Academic Years");
+    }, []);
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-2">

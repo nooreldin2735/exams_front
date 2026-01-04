@@ -1,18 +1,18 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { SubjectsList } from "@/components/Subjects/SubjectsList";
+import { QuestionsList } from "@/components/Questions/QuestionsList";
 import { PlusCircle } from "lucide-react";
 import { useNavigation } from "@/context/NavigationContext";
 import { useEffect } from "react";
 import ApiService from "@/services/Api";
 
-export default function SubjectsPage() {
-    const { yearId, termId } = useParams<{ yearId: string; termId: string }>();
+export default function QuestionsPage() {
+    const { yearId, termId, subjectId, lectureId } = useParams<{ yearId: string; termId: string; subjectId: string; lectureId: string }>();
     const navigate = useNavigate();
-    const { setYear, setTerm, setCurrentPathTitle } = useNavigation();
+    const { setYear, setTerm, setSubject, setLecture, setCurrentPathTitle } = useNavigation();
 
     useEffect(() => {
         const fetchContext = async () => {
-            if (!yearId || !termId) return;
+            if (!yearId || !termId || !subjectId || !lectureId) return;
             try {
                 // Fetch Year
                 const years = await ApiService.get<any[]>("/years");
@@ -28,39 +28,53 @@ export default function SubjectsPage() {
                 if (foundTerm) setTerm({ id: foundTerm.ID, name: foundTerm.Name });
                 else setTerm({ id: termId, name: `Term ${termId}` });
 
+                // Fetch Subject
+                const subjects = await ApiService.get<any[]>(`/subjects?term_id=${termId}`);
+                const sList = Array.isArray(subjects) ? subjects : (subjects as any).list;
+                const foundSubject = sList.find((s: any) => s.ID.toString() === subjectId);
+                if (foundSubject) setSubject({ id: foundSubject.ID, name: foundSubject.Name });
+                else setSubject({ id: subjectId, name: `Subject ${subjectId}` });
+
+                // Fetch Lecture
+                const lectures = await ApiService.get<any[]>(`/lectures?subject_id=${subjectId}`);
+                const lList = Array.isArray(lectures) ? lectures : (lectures as any).list;
+                const foundLecture = lList.find((l: any) => l.ID.toString() === lectureId);
+                if (foundLecture) setLecture({ id: foundLecture.ID, name: foundLecture.Name });
+                else setLecture({ id: lectureId, name: `Lecture ${lectureId}` });
+
             } catch (e) {
                 console.error(e);
             }
         };
 
         fetchContext();
-        setCurrentPathTitle("Subjects");
-    }, [yearId, termId]);
+        setCurrentPathTitle("Questions");
+    }, [yearId, termId, subjectId, lectureId]);
 
     return (
         <div className="space-y-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
-                    <h2 className="text-3xl font-bold tracking-tight">Subjects</h2>
+                    <h2 className="text-3xl font-bold tracking-tight">Questions</h2>
                     <p className="text-muted-foreground italic">
-                        Manage course subjects for this term.
+                        View and manage questions for this lecture.
                     </p>
                 </div>
 
                 <button
-                    onClick={() => navigate(`/create-subject?year_id=${yearId}&term_id=${termId}`)}
+                    onClick={() => navigate(`/years/${yearId}/terms/${termId}/subjects/${subjectId}/lectures/${lectureId}/questions/create`)}
                     className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold transition-all hover:brightness-110 active:scale-95 shadow-lg shadow-primary/20"
                 >
                     <PlusCircle className="h-5 w-5" />
-                    <span>Add Subject</span>
+                    <span>Add Question</span>
                 </button>
             </div>
 
             <div className="p-8 rounded-3xl border border-border bg-card/40 shadow-xl backdrop-blur-md">
-                {yearId && termId && (
-                    <SubjectsList
-                        yearId={yearId}
-                        termId={termId}
+                {lectureId && (
+                    <QuestionsList
+                        lectureId={lectureId}
+                        onQuestionSelect={(question) => console.log("Question selected:", question)}
                     />
                 )}
             </div>

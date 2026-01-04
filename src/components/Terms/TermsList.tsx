@@ -95,7 +95,7 @@ export function TermsList({ yearId, onTermSelect, className }: TermsListProps) {
                     transition={{ duration: 0.2, delay: index * 0.05 }}
                     onClick={() => {
                         if (onTermSelect) onTermSelect(term);
-                        navigate(`/years/${yearId}/terms/${term.ID}`);
+                        navigate(`/years/${yearId}/terms/${term.ID}/subjects`);
                     }}
                     className={cn(
                         "group relative flex items-center justify-between p-6",

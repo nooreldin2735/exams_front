@@ -4,6 +4,7 @@ import { Book, Loader2, AlertCircle, CheckCircle2, GraduationCap, Calendar } fro
 import ApiService from "@/services/Api";
 import { cn } from "@/lib/utils";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigation } from "@/context/NavigationContext";
 
 interface Year {
     ID: number;
@@ -30,6 +31,7 @@ export default function CreateSubjectPage() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
+    const { setYear, setTerm, setCurrentPathTitle } = useNavigation();
 
     useEffect(() => {
         const fetchYears = async () => {
@@ -43,6 +45,31 @@ export default function CreateSubjectPage() {
         };
         fetchYears();
     }, []);
+
+    useEffect(() => {
+        const updateBreadcrumbs = async () => {
+            setCurrentPathTitle("Create Subject");
+            if (initialYearId) {
+                try {
+                    const years = await ApiService.get<any[]>("/years");
+                    const list = Array.isArray(years) ? years : (years as any).list;
+                    const found = list.find((y: any) => y.ID.toString() === initialYearId);
+                    if (found) setYear({ id: found.ID, name: found.Name });
+                    else setYear({ id: initialYearId, name: `Year ${initialYearId}` });
+                } catch (e) { console.error(e); }
+            }
+            if (initialYearId && initialTermId) {
+                try {
+                    const terms = await ApiService.get<any[]>(`/terms?year_id=${initialYearId}`);
+                    const list = Array.isArray(terms) ? terms : (terms as any).list;
+                    const found = list.find((t: any) => t.ID.toString() === initialTermId);
+                    if (found) setTerm({ id: found.ID, name: found.Name });
+                    else setTerm({ id: initialTermId, name: `Term ${initialTermId}` });
+                } catch (e) { console.error(e); }
+            }
+        };
+        updateBreadcrumbs();
+    }, [initialYearId, initialTermId]);
 
     useEffect(() => {
         const fetchTerms = async () => {
