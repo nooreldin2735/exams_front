@@ -15,6 +15,9 @@ import LecturesPage from "./core/Pages/Lectures/LecturesPage";
 import CreateLecturePage from "./core/Pages/Lectures/CreateLecturePage";
 import QuestionsPage from "./core/Pages/Questions/QuestionsPage";
 import CreateQuestionPage from "./core/Pages/Questions/CreateQuestionPage";
+import ExamsPage from "./core/Pages/Exams/ExamsPage";
+import ExamViewPage from "./core/Pages/Exams/ExamViewPage";
+import CreateExamPage from "./core/Pages/Exams/CreateExamPage";
 
 import { NavigationProvider } from "./context/NavigationContext";
 import { Breadcrumbs } from "./components/Navigation/Breadcrumbs";
@@ -56,6 +59,9 @@ function App() {
             <Route path="years/:yearId/terms/:termId/subjects/:subjectId/lectures/create" element={<CreateLecturePage />} />
             <Route path="years/:yearId/terms/:termId/subjects/:subjectId/lectures/:lectureId/questions" element={<QuestionsPage />} />
             <Route path="years/:yearId/terms/:termId/subjects/:subjectId/lectures/:lectureId/questions/create" element={<CreateQuestionPage />} />
+            <Route path="years/:yearId/terms/:termId/subjects/:subjectId/exams" element={<ExamsPage />} />
+            <Route path="years/:yearId/terms/:termId/subjects/:subjectId/exams/:examId" element={<ExamViewPage />} />
+            <Route path="years/:yearId/terms/:termId/subjects/:subjectId/exams/create" element={<CreateExamPage />} />
             <Route path="create-year" element={<CreateYearPage />} />
             <Route path="create-term" element={<CreateTermPage />} />
             <Route path="create-subject" element={<CreateSubjectPage />} />

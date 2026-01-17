@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Book, ChevronRight, Loader2, AlertCircle, FileText } from "lucide-react";
+import { Book, ChevronRight, Loader2, AlertCircle, FileText, ClipboardList, FileStack } from "lucide-react";
 import ApiService from "@/services/Api";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -126,8 +126,34 @@ export function SubjectsList({ yearId, termId, onSubjectSelect, className }: Sub
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary/50 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0">
-                        <ChevronRight className="h-4 w-4" />
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/years/${yearId}/terms/${termId}/subjects/${subject.ID}/exams`);
+                            }}
+                            className="p-2 rounded-xl bg-secondary/80 text-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-300 opacity-0 group-hover:opacity-100 flex items-center gap-2 border border-border/50"
+                            title="View Exams"
+                        >
+                            <FileStack className="h-4 w-4" />
+                            <span className="text-xs font-bold sm:hidden lg:block">Exams</span>
+                        </button>
+
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/years/${yearId}/terms/${termId}/subjects/${subject.ID}/exams/create`);
+                            }}
+                            className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 opacity-0 group-hover:opacity-100 flex items-center gap-2"
+                            title="Create Exam"
+                        >
+                            <ClipboardList className="h-4 w-4" />
+                            <span className="text-xs font-bold sm:hidden lg:block">New</span>
+                        </button>
+
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary/50 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0">
+                            <ChevronRight className="h-4 w-4" />
+                        </div>
                     </div>
                 </motion.button>
             ))}

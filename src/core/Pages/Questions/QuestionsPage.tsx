@@ -61,13 +61,17 @@ export default function QuestionsPage() {
                     </p>
                 </div>
 
-                <button
-                    onClick={() => navigate(`/years/${yearId}/terms/${termId}/subjects/${subjectId}/lectures/${lectureId}/questions/create`)}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold transition-all hover:brightness-110 active:scale-95 shadow-lg shadow-primary/20"
-                >
-                    <PlusCircle className="h-5 w-5" />
-                    <span>Add Question</span>
-                </button>
+
+                <div className="flex items-center gap-3">
+
+                    <button
+                        onClick={() => navigate(`/years/${yearId}/terms/${termId}/subjects/${subjectId}/lectures/${lectureId}/questions/create`)}
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold transition-all hover:brightness-110 active:scale-95 shadow-lg shadow-primary/20"
+                    >
+                        <PlusCircle className="h-5 w-5" />
+                        <span>Add Question</span>
+                    </button>
+                </div>
             </div>
 
             <div className="p-8 rounded-3xl border border-border bg-card/40 shadow-xl backdrop-blur-md">
