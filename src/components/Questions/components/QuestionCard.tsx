@@ -17,6 +17,7 @@ interface QuestionCardProps {
     onClick?: () => void;
     hideActions?: boolean;
     selected?: boolean;
+    isPermanent?: boolean;
 }
 
 const difficultyConfig = {
@@ -40,7 +41,8 @@ export const QuestionCard = ({
     onDelete,
     onClick,
     hideActions,
-    selected
+    selected,
+    isPermanent
 }: QuestionCardProps) => {
     const [highlightedAttachment, setHighlightedAttachment] = useState<number | null>(null);
 
@@ -56,23 +58,29 @@ export const QuestionCard = ({
     const qType = typeConfig[question.questionType as keyof typeof typeConfig] || { label: "Unknown", icon: HelpCircle, color: "text-gray-500" };
     const TypeIcon = qType.icon;
 
-    const correctAnswers = question.answers.split(',').filter(x => x.trim() !== "").map(s => parseInt(s.trim()));
+    const correctAnswers = (question.answers || "").split(',').filter(x => x.trim() !== "").map(s => parseInt(s.trim()));
 
     return (
         <motion.article
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1, type: "spring", damping: 25 }}
-            onClick={onClick}
+            onClick={isPermanent ? undefined : onClick}
             className={cn(
-                "glass-card p-6 md:p-8 transition-all duration-300",
-                onClick && !selected && "cursor-pointer hover:shadow-xl hover:shadow-primary/5 border-primary/10",
-                selected && "opacity-60 grayscale-[0.5] border-primary/40 bg-primary/5 pointer-events-none"
+                "glass-card p-6 md:p-8 transition-all duration-300 relative",
+                onClick && !isPermanent && "cursor-pointer hover:shadow-xl hover:shadow-primary/5 border-primary/10",
+                selected && !isPermanent && "border-primary bg-primary/5",
+                isPermanent && "opacity-60 grayscale-[0.5] border-border bg-accent/20 pointer-events-none"
             )}
         >
-            {selected && (
-                <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg animate-in fade-in zoom-in">
-                    Added
+            {isPermanent && (
+                <div className="absolute top-4 right-4 bg-muted text-muted-foreground px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm border border-border">
+                    In Exam Pool
+                </div>
+            )}
+            {selected && !isPermanent && (
+                <div className="absolute top-4 right-4 bg-primary text-primary-foreground p-1.5 rounded-full shadow-lg animate-in fade-in zoom-in">
+                    <ListTodo className="h-4 w-4" />
                 </div>
             )}
             {/* Header */}

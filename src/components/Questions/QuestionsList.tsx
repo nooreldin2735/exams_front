@@ -11,9 +11,16 @@ interface QuestionsListProps {
     onQuestionSelect?: (question: Question) => void;
     className?: string;
     selectedQuestionIds?: number[];
+    permanentQuestionIds?: number[];
 }
 
-export function QuestionsList({ lectureId, onQuestionSelect, className, selectedQuestionIds = [] }: QuestionsListProps) {
+export function QuestionsList({
+    lectureId,
+    onQuestionSelect,
+    className,
+    selectedQuestionIds = [],
+    permanentQuestionIds = []
+}: QuestionsListProps) {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -96,15 +103,21 @@ export function QuestionsList({ lectureId, onQuestionSelect, className, selected
             className={cn("space-y-6", className)}
         >
             {questions.map((question, index) => {
-                const isSelected = selectedQuestionIds.includes((question.ID ?? question.id) as number);
+                const id = question.ID ?? question.id;
+                const isPermanent = permanentQuestionIds.includes(id as number);
+                const isSelected = selectedQuestionIds.includes(id as number) || isPermanent;
+
+                // console.log(`Question List Item ${index}: id=${id}, isSelected=${isSelected}, isPermanent=${isPermanent}`);
+
                 return (
                     <QuestionCard
-                        key={question.ID || question.id || index}
+                        key={id || index}
                         question={question}
                         index={index}
-                        onClick={isSelected ? undefined : () => onQuestionSelect?.(question)}
+                        onClick={() => onQuestionSelect?.(question)}
                         hideActions={!!onQuestionSelect}
                         selected={isSelected}
+                        isPermanent={isPermanent}
                     />
                 );
             })}

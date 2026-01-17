@@ -43,10 +43,17 @@ export default function ExamViewPage() {
                 if (foundExam) setExamInfo(foundExam);
 
                 // 2. Fetch Questions (GET /api/v0/exam/show?exam_id=ID)
-                const questionsData = await ApiService.get<Question[]>(`/exam/show?exam_id=${examId}`);
-                console.log("Fetched exam questions:", questionsData);
+                const data = await ApiService.get<any>(`/exam/show?exam_id=${examId}`);
+                console.log("Fetched exam questions:", data);
 
-                setQuestions(questionsData || []);
+                let qList: Question[] = [];
+                if (Array.isArray(data)) {
+                    qList = data;
+                } else if (data && typeof data === 'object' && Array.isArray(data.list)) {
+                    qList = data.list;
+                }
+
+                setQuestions(qList);
                 setError(null);
             } catch (err: any) {
                 setError(err.message || "Failed to load exam details");

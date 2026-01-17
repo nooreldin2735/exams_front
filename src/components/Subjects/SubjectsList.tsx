@@ -96,7 +96,7 @@ export function SubjectsList({ yearId, termId, onSubjectSelect, className }: Sub
     return (
         <div className={cn("grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4", className)}>
             {subjects.map((subject, index) => (
-                <motion.button
+                <motion.div
                     key={subject.ID}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -109,7 +109,7 @@ export function SubjectsList({ yearId, termId, onSubjectSelect, className }: Sub
                         }
                     }}
                     className={cn(
-                        "group relative flex items-center justify-between p-6",
+                        "group relative flex items-center justify-between p-6 cursor-pointer",
                         "bg-card hover:bg-accent/50 border border-border/50 hover:border-primary/30",
                         "rounded-2xl transition-all duration-300 shadow-sm active:scale-[0.98]"
                     )}
@@ -155,7 +155,7 @@ export function SubjectsList({ yearId, termId, onSubjectSelect, className }: Sub
                             <ChevronRight className="h-4 w-4" />
                         </div>
                     </div>
-                </motion.button>
+                </motion.div>
             ))}
         </div>
     );

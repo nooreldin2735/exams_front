@@ -57,8 +57,20 @@ export default function CreateExamPage() {
         fetchContext();
     }, [yearId, termId, subjectId]);
 
-    const handleAddQuestion = (q: Question) => {
-        setQuestions([...questions, q]);
+    useEffect(() => {
+        console.log("=== QUESTIONS POOL UPDATED ===");
+        console.log("Count:", questions.length);
+        console.log("Full State:", questions);
+    }, [questions]);
+
+    const handleAddQuestion = (q: Question | Question[]) => {
+        console.log("ON_SUBMIT_RECEIVED:", q);
+        const incoming = Array.isArray(q) ? q : [q];
+        setQuestions(prev => {
+            const next = [...prev, ...incoming];
+            console.log("Setting questions to:", next.length, "items");
+            return next;
+        });
     };
 
     const handleRemoveQuestion = (index: number) => {
@@ -71,34 +83,50 @@ export default function CreateExamPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log("Raw questions state before submission:", questions);
         if (!title.trim()) return setError("Exam title is required");
         if (questions.length === 0) return setError("Add at least one question");
+        if (!settings.Duration_min || isNaN(settings.Duration_min) || settings.Duration_min <= 0) {
+            return setError("Exam duration must be a valid number of minutes (e.g., 60)");
+        }
 
         try {
             setLoading(true);
             setError(null);
 
+            console.log("Processing questions for payload...", questions);
+            const mappedQuestions = questions.map((q, idx) => {
+                const id = q.ID ?? q.id;
+
+                // If it's explicitly marked existing, it MUST have an ID
+                if (q.isExisting) {
+                    if (id !== undefined && id !== null) {
+                        console.log(`[Item ${idx}] Mapping as existing ID: ${id}`);
+                        return id as number;
+                    } else {
+                        console.warn(`[Item ${idx}] Question marked 'isExisting' but missing ID! Falling back to full object.`, q);
+                    }
+                }
+                console.log(`Mapping new question:`, q);
+                return {
+                    ...q,
+                    degree: q.degree ?? 1
+                };
+            }).filter(q => q !== null && q !== undefined);
+
             const payload: CreateExamPayload = {
                 title: title.trim(),
                 subject_id: parseInt(subjectId || "0"),
-                questions: questions
-                    .map(q => {
-                        if (q.isExisting) {
-                            return (q.ID ?? q.id) as number;
-                        }
-                        return {
-                            ...q,
-                            degree: q.degree ?? 1
-                        };
-                    })
-                    .filter(q => q !== null && q !== undefined),
+                questions: mappedQuestions,
                 settings: {
                     ...settings,
+                    Duration_min: settings.Duration_min || 0, // Ensure no NaN
                     StartAt: settings.StartAt.length === 16 ? `${settings.StartAt}:00` : settings.StartAt,
                     EndAt: settings.EndAt.length === 16 ? `${settings.EndAt}:00` : settings.EndAt
                 }
             };
 
+            console.log("Submitting Exam Payload:", payload);
             await ApiService.post("/exams/create", payload);
             navigate(`/years/${yearId}/terms/${termId}/subjects/${subjectId}/lectures`); // Redirect back
         } catch (err: any) {
@@ -251,8 +279,12 @@ export default function CreateExamPage() {
                                     <label className="text-xs font-semibold text-muted-foreground">Duration (Minutes)</label>
                                     <input
                                         type="number"
-                                        value={settings.Duration_min}
-                                        onChange={(e) => handleSettingChange('Duration_min', parseInt(e.target.value))}
+                                        value={isNaN(settings.Duration_min) ? "" : settings.Duration_min}
+                                        onChange={(e) => {
+                                            const val = e.target.value === "" ? NaN : parseInt(e.target.value);
+                                            handleSettingChange('Duration_min', val);
+                                        }}
+                                        placeholder="60"
                                         className="w-full px-4 py-2.5 rounded-xl bg-secondary/50 border border-transparent focus:bg-background focus:border-primary transition-all outline-none font-mono"
                                     />
                                 </div>
